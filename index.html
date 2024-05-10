@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .bg-teal-200 {
+            background-color: #81e6d9; 
+        }
+        .bg-cyan-200 {
+            background-color: #A7FFEB; 
+        }
+        .cell {
+            border-color: #319795; 
+        }
+        #resetBtn {
+            background-color: #4FD1C5; 
+        }
+    </style>
+</head>
+
+<body class="bg-teal-200 flex justify-center items-center h-screen">
+    
+    <div id="app" class="bg-cyan-200 p-8 rounded-lg shadow-md">
+        <h1 class="text-2xl font-semibold mb-4">Tic Tac Toe</h1>
+        <div id="board" class="grid grid-cols-3 gap-2">
+           
+        </div>
+        <button id="resetBtn" class="mt-4 text-white font-semibold py-2 px-4 rounded">Reset</button>
+    </div>
+
+    <script>
+        const board = document.getElementById('board');
+        const resetBtn = document.getElementById('resetBtn');
+        let currentPlayer = 'X';
+        let cells = Array.from({ length: 9 }, (_, index) => index + 1);
+
+        function createCell(index) {
+            const cell = document.createElement('div');
+            cell.classList.add('border', 'border-black-400', 'p-4', 'text-4xl', 'text-center', 'cursor-pointer','hover:bg-green-100');
+            cell.dataset.index = index;
+            cell.addEventListener('click', () => handleCellClick(index));
+            return cell;
+        }
+
+        function handleCellClick(index) {
+            if (!cells[index]) return;
+
+            cells[index] = currentPlayer;
+            renderBoard();
+
+            if (checkWin(currentPlayer)) {
+                setTimeout(() => {
+                    alert(`${currentPlayer} wins!`);
+                    resetGame();
+                }, 50);
+                return;
+            }
+
+            if (cells.every(cell => typeof cell === 'string')) {
+                setTimeout(() => {
+                    alert('It\'s a draw!');
+                    resetGame();
+                }, 50);
+                return;
+            }
+
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        }
+
+        function checkWin(player) {
+            const winPatterns = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8],
+                [0, 3, 6], [1, 4, 7], [2, 5, 8],
+                [0, 4, 8], [2, 4, 6]
+            ];
+
+            return winPatterns.some(pattern =>
+                pattern.every(index => cells[index] === player)
+            );
+        }
+
+        function renderBoard() {
+            board.innerHTML = '';
+            cells.forEach((cell, index) => {
+                const cellElement = createCell(index);
+                cellElement.textContent = cell || '';
+                board.appendChild(cellElement);
+            });
+        }
+
+        function resetGame() {
+            currentPlayer = 'X';
+            cells = Array.from({ length: 9 }, (_, index) => index + 1);
+            renderBoard();
+        }
+
+        renderBoard();
+
+        resetBtn.addEventListener('click', resetGame);
+    </script>
+</body>
+</html>
